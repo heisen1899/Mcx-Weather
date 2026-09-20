@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>MCX NG — GFS vs ECMWF</title>
+
+  <!-- iOS "add to home screen" app behavior: without these three tags iOS
+       always opens the page inside Safari's browser chrome (address bar,
+       tabs, back/forward), even when launched from a home-screen icon.
+       With them, launching from the home-screen icon opens fullscreen with
+       no browser UI at all, like a native app. -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MCX NG" />
+  <link rel="apple-touch-icon" href="data:image/png;base64,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" />
+  <style>
+    :root{--bg:#080b14;--panel:#101625;--panel2:#0d1320;--text:#f4f6fb;--muted:#9aa4b2;--line:#222b3b;--good:#35d07f;--bad:#ff6574;--accent:#6ea8fe;--accent2:#c792ff}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#070a12 0%,#0b1020 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif;min-height:100vh}
+    main{max-width:820px;margin:0 auto;padding:18px 14px 34px}
+    header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+    .title{font-size:23px;font-weight:800;letter-spacing:-.03em}.sub{font-size:12px;color:var(--muted);margin-top:4px}
+    button{border:0;background:var(--text);color:#09101c;font-weight:800;border-radius:14px;padding:12px 16px;font-size:14px;min-width:96px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+    button:disabled{opacity:.55}
+    .status{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);margin:10px 1px 14px}
+    .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--good);margin-right:6px}.dot.off{background:var(--bad)}
+    .hero{background:linear-gradient(180deg,#141b2d,#101625);border:1px solid var(--line);border-radius:22px;padding:18px;margin-bottom:12px}
+    .heroTop{display:flex;justify-content:space-between;align-items:center;gap:12px}.label{font-size:12px;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);font-weight:700}
+    .cycle{font-size:12px;font-weight:800;padding:7px 9px;border:1px solid var(--line);border-radius:999px;background:#0b111d;max-width:60%;text-align:right;line-height:1.3}
+    .modelRow{display:flex;gap:22px;margin:13px 0 6px;align-items:baseline;flex-wrap:wrap}
+    .modelBlock .modelName{font-size:11px;text-transform:uppercase;letter-spacing:.09em;font-weight:800;color:var(--muted)}
+    .modelBlock.gfs .modelName{color:var(--accent)}.modelBlock.ecmwf .modelName{color:var(--accent2)}
+    .value{font-size:46px;line-height:1;font-weight:900;letter-spacing:-.04em}.unit{font-size:13px;color:var(--muted);font-weight:700;vertical-align:middle;margin-left:4px}
+    .delta{font-size:15px;font-weight:900;margin-top:14px}.delta.up{color:var(--good)}.delta.down{color:var(--bad)}.delta.flat{color:var(--muted)}
+    .meta{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .card{background:var(--panel2);border:1px solid var(--line);border-radius:18px;padding:14px}.card h3{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 10px}.big{font-size:22px;font-weight:850}.small{font-size:12px;color:var(--muted);margin-top:5px}
+    .hubGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+    .hub{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:12px}
+    .hub h4{margin:0 0 6px;font-size:13px;font-weight:800}.hub .weight{font-size:10px;color:var(--muted);font-weight:700;float:right}
+    .hub .pair{display:flex;justify-content:space-between;font-size:13px;margin-top:4px}
+    .hub .pair span:first-child{color:var(--accent)}.hub .pair span:last-child{color:var(--accent2)}
+    table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}.history{margin-top:12px}.history td,.history th{padding:10px 4px;border-bottom:1px solid var(--line);font-size:12px}.history th{color:var(--muted);font-weight:700;text-align:left}.right{text-align:right}.up{color:var(--good);font-weight:800}.down{color:var(--bad);font-weight:800}.flat{color:var(--muted);font-weight:800}
+    .prose{background:var(--panel2);border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:12px}
+    .prose h3{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 8px}
+    .prose p{font-size:13px;line-height:1.55;color:#d7dbe4;margin:0}
+    .footer{margin-top:14px;padding:12px 2px;font-size:11px;color:var(--muted);line-height:1.55}.footer a{color:var(--accent);text-decoration:none}
+    .error{display:none;background:#2a1216;border:1px solid #5e2630;color:#ffb0b8;border-radius:14px;padding:12px;font-size:12px;line-height:1.45;margin-bottom:12px}
+    @media(max-width:520px){main{padding:14px 11px 28px}.value{font-size:38px}.grid{grid-template-columns:1fr}.hubGrid{grid-template-columns:1fr}.hero{border-radius:20px}.title{font-size:20px}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <div class="title">MCX NG · GFS vs ECMWF</div>
+      <div class="sub">Arc Research demand-hub outlook · India IST · manual update</div>
+    </div>
+    <button id="refresh">UPDATE</button>
+  </header>
+
+  <div class="status"><span><span id="dot" class="dot off"></span><span id="statusText">Not loaded</span></span><span id="clock"></span></div>
+  <div id="error" class="error"></div>
+
+  <section class="hero">
+    <div class="heroTop"><div class="label">National weighted CDD</div><div id="cycle" class="cycle">—</div></div>
+    <div class="modelRow">
+      <div class="modelBlock gfs"><div class="modelName">GFS</div><div><span id="gfsCdd" class="value">—</span><span class="unit">CDD</span></div></div>
+      <div class="modelBlock ecmwf"><div class="modelName">ECMWF</div><div><span id="ecmwfCdd" class="value">—</span><span class="unit">CDD</span></div></div>
+    </div>
+    <div id="spreadLine" class="meta">Spread: — · Avg: —</div>
+    <div id="delta" class="delta flat">—</div>
+    <div id="convergence" class="meta">Convergence score: —</div>
+    <div id="reportMeta" class="meta">Report: —</div>
+  </section>
+
+  <div class="grid">
+    <div class="card"><h3>GFS trend</h3><div id="gfsTrend" class="big">—</div><div class="small">vs prior cycle</div></div>
+    <div class="card"><h3>ECMWF trend</h3><div id="ecmwfTrend" class="big">—</div><div class="small">vs prior cycle</div></div>
+  </div>
+
+  <div id="hubGrid" class="hubGrid"></div>
+
+  <section class="prose" id="summaryCard" style="display:none">
+    <h3>Executive summary</h3>
+    <p id="summaryText"></p>
+  </section>
+  <section class="prose" id="demandCard" style="display:none">
+    <h3>Demand implications</h3>
+    <p id="demandText"></p>
+  </section>
+  <section class="prose" id="caveatsCard" style="display:none">
+    <h3>Model agreement &amp; caveats</h3>
+    <p id="caveatsText"></p>
+  </section>
+
+  <section class="card history">
+    <h3>My saved update history</h3>
+    <table><thead><tr><th>Report</th><th class="right">GFS</th><th class="right">ECMWF</th><th class="right">Fetched</th></tr></thead><tbody id="historyBody"><tr><td colspan="4" class="small">Press UPDATE to start the local history.</td></tr></tbody></table>
+  </section>
+
+  <div class="footer">
+    The page stores your update history only in this iPhone/browser via localStorage. Data is Arc Research's public Natural Gas Weather report (GFS vs ECMWF demand-weighted CDDs, hub-level breakdown). Reports can be revised in place during the day — this dashboard saves a new history row only when the report's content actually changes (detected server-side), not on every tap.
+    <br><br><a id="sourceLink" href="https://www.getarcresearch.com/commodities/natural-gas/weather" target="_blank" rel="noopener">Open latest report</a>
+  </div>
+</main>
+<script>
+const KEY='mcx-ng-arc-history-v1';
+const $=id=>document.getElementById(id);
+function fmtShort(iso){try{return new Intl.DateTimeFormat('en-IN',{month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'Asia/Kolkata'}).format(new Date(iso));}catch{return iso}}
+
+function history(){return JSON.parse(localStorage.getItem(KEY)||'[]')}
+
+// Dedup/identity is based on contentHash (computed server-side from the parsed
+// report fields), NOT on Arc's self-reported cycle label — the same lesson as
+// the GWDD dashboard: a same-day label can repeat across genuinely different
+// updates, and here it can also repeat because the page is edited in place.
+function saveHistory(row){
+  const old = history();
+  const top = old[0];
+  if (top && top.contentHash === row.contentHash) return; // identical content, no-op
+  const next = [row, ...old].slice(0, 40);
+  localStorage.setItem(KEY, JSON.stringify(next));
+  renderHistory();
+}
+
+function renderHistory(){
+  const h=history(); const body=$('historyBody');
+  if(!h.length){body.innerHTML='<tr><td colspan="4" class="small">Press UPDATE to start the local history.</td></tr>';return}
+  body.innerHTML=h.map(x=>{
+    const label = (x.reportDate||'—') + (x.cycleLabel?(' · '+x.cycleLabel):'');
+    const g = x.gfsCdd!=null?Number(x.gfsCdd).toFixed(1):'—';
+    const e = x.ecmwfCdd!=null?Number(x.ecmwfCdd).toFixed(1):'—';
+    return `<tr><td>${label}</td><td class="right">${g}</td><td class="right">${e}</td><td class="right">${fmtShort(x.fetchedAt)}</td></tr>`;
+  }).join('');
+}
+
+function renderHubs(hubs){
+  const grid = $('hubGrid');
+  if (!hubs || !hubs.length) { grid.innerHTML=''; return; }
+  grid.innerHTML = hubs.map(h=>{
+    const g = h.gfsCdd!=null?Number(h.gfsCdd).toFixed(1):'—';
+    const e = h.ecmwfCdd!=null?Number(h.ecmwfCdd).toFixed(1):'—';
+    const w = h.weightPct!=null?`${h.weightPct}% wt`:'';
+    return `<div class="hub"><span class="weight">${w}</span><h4>${h.name}${h.city?(' · '+h.city):''}</h4><div class="pair"><span>GFS ${g}</span><span>ECMWF ${e}</span></div></div>`;
+  }).join('');
+}
+
+function setProse(cardId, textId, text){
+  if (text) { $(cardId).style.display='block'; $(textId).textContent = text; }
+  else { $(cardId).style.display='none'; }
+}
+
+async function update(){
+  $('refresh').disabled=true; $('statusText').textContent='Updating…'; $('dot').className='dot'; $('error').style.display='none';
+  try{
+    const r=await fetch('/.netlify/functions/arc-weather?ts='+Date.now(),{cache:'no-store'});
+    if(!r.ok) throw new Error('Backend returned '+r.status);
+    const d=await r.json(); if(d.error) throw new Error(d.error);
+
+    const n = d.national || {};
+    $('gfsCdd').textContent = n.gfsCdd!=null ? Number(n.gfsCdd).toFixed(1) : '—';
+    $('ecmwfCdd').textContent = n.ecmwfCdd!=null ? Number(n.ecmwfCdd).toFixed(1) : '—';
+    $('cycle').textContent = d.cycleLabel || d.reportDate || '—';
+    $('spreadLine').textContent = `Spread: ${n.spread!=null?(n.spread>=0?'+':'')+n.spread.toFixed(1):'—'} (GFS−ECMWF) · Avg: ${n.avgCdd!=null?n.avgCdd.toFixed(1):'—'}`;
+    $('convergence').textContent = 'Convergence score: ' + (n.convergenceScore!=null?n.convergenceScore:'—') + (n.deltaConvergence!=null?`  (Δ ${n.deltaConvergence>=0?'+':''}${n.deltaConvergence})`:'');
+    $('reportMeta').textContent = 'Report: ' + (d.reportDate||'—');
+    $('gfsTrend').textContent = n.gfsTrend!=null ? `${n.gfsTrend>=0?'+':''}${n.gfsTrend}` : '—';
+    $('ecmwfTrend').textContent = n.ecmwfTrend!=null ? `${n.ecmwfTrend>=0?'+':''}${n.ecmwfTrend}` : '—';
+    $('sourceLink').href = d.reportUrl || $('sourceLink').href;
+
+    const prev = history()[0];
+    let delta = null;
+    if (prev && n.spread!=null && Number.isFinite(Number(prev.spread))) delta = n.spread - Number(prev.spread);
+    const el=$('delta');
+    el.className='delta '+(delta>0?'up':delta<0?'down':'flat');
+    el.textContent = delta==null ? 'Δ spread — (first saved update)' : `${delta>=0?'+':''}${delta.toFixed(1)} spread vs last saved update`;
+
+    renderHubs(d.hubs);
+    setProse('summaryCard','summaryText', d.summary);
+    setProse('demandCard','demandText', d.demandImplications);
+    setProse('caveatsCard','caveatsText', d.caveats);
+
+    saveHistory({
+      contentHash: d.contentHash,
+      reportDate: d.reportDate,
+      cycleLabel: d.cycleLabel,
+      gfsCdd: n.gfsCdd, ecmwfCdd: n.ecmwfCdd, spread: n.spread,
+      fetchedAt: d.fetchedAt || new Date().toISOString()
+    });
+
+    $('statusText').textContent='Updated'; $('dot').className='dot';
+  }catch(e){$('statusText').textContent='Update failed';$('dot').className='dot off';$('error').textContent=e.message+' — the source page layout may have changed, or no fresh report is published yet.';$('error').style.display='block'}
+  finally{$('refresh').disabled=false}
+}
+function clock(){ $('clock').textContent=new Intl.DateTimeFormat('en-IN',{dateStyle:'medium',timeStyle:'short',hour12:false,timeZone:'Asia/Kolkata'}).format(new Date())+' IST'; }
+$('refresh').addEventListener('click',update); renderHistory(); clock(); setInterval(clock,1000);
+</script>
+</body>
+</html>
